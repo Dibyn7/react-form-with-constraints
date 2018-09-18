@@ -17,7 +17,7 @@ export class InputElement {
   // HTMLButtonElement, HTMLFieldSetElement, HTMLInputElement, HTMLObjectElement,
   // HTMLOutputElement, HTMLSelectElement, HTMLTextAreaElement
   // ValidityState is supported by IE >= 10
-  readonly validity: IValidityState;
+  readonly validity: ValidityState;
   readonly validationMessage: string;
 
   // Need to duplicate the input when the user changes rapidly the input
@@ -30,13 +30,13 @@ export class InputElement {
       this.value = input.value;
 
       // Solution 1: no clone, then .mock.calls never ends with ValidityState inside FormWithConstraints.test.tsx in v0.8
-      //this.validity = input.validity;
+      this.validity = input.validity;
 
       // Solution 2: JSON does not work to clone ValidityState (results in an empty object)
       //this.validity = JSON.parse(JSON.stringify(input.validity));
 
       // Solution 3: manually clone ValidityState
-      this.validity = new IValidityState(input.validity as ValidityState);
+      //this.validity = new IValidityState(input.validity as ValidityState);
 
       this.validationMessage = input.validationMessage;
     } else {
@@ -53,7 +53,11 @@ export class InputElement {
 // Cannot clone ValidityState using JSON.parse(JSON.stringify(input.validity)),
 // results in an empty object ({}) under Chrome 66, Firefox 60 and Safari 10.1.2
 // so let's manually clone it.
+/*
 export class IValidityState implements ValidityState {
+  // FIXME
+  // See Crash: TypeError: Cannot read property 'kind' of undefined (at isConstraintPosition) https://github.com/Microsoft/TypeScript/issues/26978
+
   readonly badInput: boolean;
   readonly customError: boolean;
   readonly patternMismatch: boolean;
@@ -80,3 +84,4 @@ export class IValidityState implements ValidityState {
     this.valueMissing = validity.valueMissing;
   }
 }
+*/
